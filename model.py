@@ -17,10 +17,10 @@ X = df.drop('quality', axis=1)
 y = df['quality']
 
 # Train/test split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=35)
 
 # Model
-model = RandomForestClassifier(random_state=42)
+model = RandomForestClassifier(random_state=35)
 model.fit(X_train, y_train)
 
 # Prediction
@@ -50,11 +50,27 @@ dagshub.init(repo_name='wine-quality-check-flask',repo_owner='chaan2835', mlflow
 
 with mlflow.start_run():
     mlflow.log_param("model_type", "RandomForestClassifier")
-    mlflow.log_param("random_state", 42)
-    mlflow.log_param("test_size", 0.2)
+    mlflow.log_param("random_state", 35)
+    mlflow.log_param("test_size", 0.3)
     mlflow.log_metric("accuracy", accuracy)
     mlflow.log_metric("f1_score", f1)
     mlflow.log_metric("precision", precession)
     mlflow.log_metric("recall", recall)
+    mlflow.set_tag("author", "chaan2835")
    
-    
+   
+    #save and log the model
+    report = classification_report(y_test, y_pred)
+    joblib.dump(model, 'wine_quality_model.pkl')
+    mlflow.log_artifact('wine_quality_model.pkl')
+
+    # save and log classification report
+    with open('classification_report.txt', 'w') as f:
+        f.write(report)
+    mlflow.log_artifact('classification_report.txt')
+
+    #optional: log the model to DagsHub
+    X_test.to_csv('X_test.csv', index=False)
+    y_test.to_csv('y_test.csv', index=False)
+    mlflow.log_artifact('X_test.csv')   
+    mlflow.log_artifact('y_test.csv')
