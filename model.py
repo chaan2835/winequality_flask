@@ -17,7 +17,7 @@ os.makedirs("log_metrics", exist_ok=True)
 df = pd.read_csv("D:\\mlops\\github-practises-mlops\\winequality_flask\\data\\WineQT.csv")
 
 # Features and target
-X = df.drop('quality', axis=1)
+X = df.drop(['quality', 'Id'], axis=1)
 y = df['quality']
 
 # Train/test split
